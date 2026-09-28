@@ -1,0 +1,7 @@
+Fs=48000 samples/s; f=1000 Hz; A=1.0; phase=0.0 rad; N=96
+T=0.001 s; Ts=2.08333333e-05 s; samples/cycle=48
+Record interval N/Fs=0.002 s; last sample time=0.00197916667 s
+First 8 samples: [1.       0.991445 0.965926 0.92388  0.866025 0.793353 0.707107 0.608761]
+NumPy=2.5.3; Matplotlib=3.11.2
+28000/20000 Hz max sample difference: 6.958e-14
+47000/1000 Hz max sample difference: 4.152e-14

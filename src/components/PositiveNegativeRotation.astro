@@ -1,0 +1,62 @@
+<section class="pn-demo" aria-label="Положительная и отрицательная частота">
+  <label for="pn-sample">Номер отсчёта: <strong data-n>1</strong> · угол положительного вращения: <strong data-angle>45°</strong></label>
+  <input id="pn-sample" data-sample type="range" min="0" max="16" step="1" value="1" />
+
+  <div class="planes">
+    <figure>
+      <figcaption><strong>+f</strong>: против часовой стрелки</figcaption>
+      <svg viewBox="0 0 300 300" role="img" aria-label="Положительная частота вращается против часовой стрелки">
+        <path d="M25 150H275 M150 25V275" class="axis" />
+        <circle cx="150" cy="150" r="105" class="unit" />
+        <text x="278" y="145">I</text><text x="157" y="24">Q</text>
+        <path d="M224 76 A105 105 0 0 0 76 76" class="direction positive" />
+        <line data-pos-vector x1="150" y1="150" x2="224.25" y2="75.75" class="vector positive" />
+        <circle data-pos-point cx="224.25" cy="75.75" r="6" class="point positive" />
+      </svg>
+      <output data-pos>z₊[1] = 0.707 + j0.707</output>
+    </figure>
+
+    <figure>
+      <figcaption><strong>−f</strong>: по часовой стрелке</figcaption>
+      <svg viewBox="0 0 300 300" role="img" aria-label="Отрицательная частота вращается по часовой стрелке">
+        <path d="M25 150H275 M150 25V275" class="axis" />
+        <circle cx="150" cy="150" r="105" class="unit" />
+        <text x="278" y="145">I</text><text x="157" y="24">Q</text>
+        <path d="M224 224 A105 105 0 0 1 76 224" class="direction negative" />
+        <line data-neg-vector x1="150" y1="150" x2="224.25" y2="224.25" class="vector negative" />
+        <circle data-neg-point cx="224.25" cy="224.25" r="6" class="point negative" />
+      </svg>
+      <output data-neg>z₋[1] = 0.707 − j0.707</output>
+    </figure>
+  </div>
+
+  <p class="comparison" data-comparison>I одинаковы: 0.707 · Q противоположны: +0.707 и −0.707</p>
+</section>
+
+<style>
+  .pn-demo{border:1px solid #dbe4e8;background:#fff;border-radius:8px;padding:20px;margin:28px 0}.pn-demo>label{display:block;margin-bottom:8px}.pn-demo>input{width:100%;min-height:30px;accent-color:#00786d}.planes{display:grid;grid-template-columns:1fr 1fr;gap:18px}.planes figure{margin:14px 0 0;text-align:center}.planes figcaption{font-size:15px}.planes svg{display:block;width:min(100%,330px);height:auto;margin:auto}.planes svg text{font:14px system-ui;fill:#17333e}.axis{stroke:#bdcdd3}.unit{fill:none;stroke:#d3dee2}.vector{stroke-width:4}.point{stroke:none}.positive{stroke:#00786d;fill:#00786d}.negative{stroke:#b85b0b;fill:#b85b0b}.direction{fill:none;stroke-width:3;stroke-dasharray:6 5}.planes output{display:block;font-size:14px;font-variant-numeric:tabular-nums}.comparison{text-align:center;margin:14px 0 0;font-weight:600;font-variant-numeric:tabular-nums}@media(max-width:650px){.planes{grid-template-columns:1fr}.pn-demo{padding:13px}}
+</style>
+
+<script>
+for (const root of document.querySelectorAll<HTMLElement>('.pn-demo')) {
+  const sample = root.querySelector<HTMLInputElement>('[data-sample]')!;
+  const set = (selector:string, attrs:Record<string,number>) => {
+    const element = root.querySelector(selector)!;
+    for (const [name,value] of Object.entries(attrs)) element.setAttribute(name,String(value));
+  };
+  const signed = (value:number) => `${value < 0 ? '−' : '+'} j${Math.abs(value).toFixed(3)}`;
+  const clean = (value:number) => Math.abs(value) < 5e-12 ? 0 : value;
+  const update = () => {
+    const n = Number(sample.value), degrees = (45*n) % 360, radians = degrees*Math.PI/180;
+    const i = clean(Math.cos(radians)), q = clean(Math.sin(radians));
+    const xp = 150+105*i, yp = 150-105*q, yn = 150+105*q;
+    set('[data-pos-vector]',{x2:xp,y2:yp}); set('[data-pos-point]',{cx:xp,cy:yp});
+    set('[data-neg-vector]',{x2:xp,y2:yn}); set('[data-neg-point]',{cx:xp,cy:yn});
+    root.querySelector('[data-n]')!.textContent=String(n); root.querySelector('[data-angle]')!.textContent=`${45*n}°`;
+    root.querySelector('[data-pos]')!.textContent=`z₊[${n}] = ${i.toFixed(3)} ${signed(q)}`;
+    root.querySelector('[data-neg]')!.textContent=`z₋[${n}] = ${i.toFixed(3)} ${signed(-q)}`;
+    root.querySelector('[data-comparison]')!.textContent=`I одинаковы: ${i.toFixed(3)} · Q противоположны: ${q.toFixed(3)} и ${(-q).toFixed(3)}`;
+  };
+  sample.addEventListener('input',update); update();
+}
+</script>

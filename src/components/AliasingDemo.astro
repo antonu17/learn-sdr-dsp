@@ -1,0 +1,40 @@
+<section class="alias-demo" aria-label="Два сигнала с одинаковыми отсчётами">
+<div class="legend"><strong>1 kHz · зелёная точка</strong><strong>5 kHz · оранжевая точка</strong></div>
+<label><input data-snap type="checkbox" checked/> Только моменты измерения</label>
+<label for="alias-time">Время в интервалах между отсчётами: <b data-time>1</b></label>
+<input id="alias-time" data-time-slider type="range" min="0" max="6" step="1" value="1"/>
+<div class="circles">
+{[1,5].map((frequency,index)=><svg viewBox="0 0 270 290" role="img" aria-label={`Вращение ${frequency} kHz`} data-circle={index}>
+<text x="135" y="22" text-anchor="middle">{frequency} kHz</text><circle cx="135" cy="140" r="85" fill="none" stroke="#c1d3da"/><path d="M30 140H240 M135 40V240" stroke="#c1d3da"/>
+<line data-radius x1="135" y1="140" x2="177.5" y2={index===0?'66.39':'213.61'} stroke={index===0?'#00786d':'#b85b0b'} stroke-width="3"/>
+<line data-projection x1="177.5" y1={index===0?'66.39':'213.61'} x2="177.5" y2="140" stroke={index===0?'#00786d':'#b85b0b'} stroke-dasharray="4 4"/>
+<circle data-point cx="177.5" cy={index===0?'66.39':'213.61'} r="6" fill={index===0?'#00786d':'#b85b0b'}/><rect data-foot x="172.5" y="135" width="10" height="10" fill={index===0?'#00786d':'#b85b0b'}/>
+<text x="20" y="160">−1</text><text x="232" y="160">+1</text><text data-angle x="135" y="263" text-anchor="middle">{frequency*60}°</text><text data-value x="135" y="284" text-anchor="middle">Значение: 0.500</text>
+</svg>)}
+</div>
+<output aria-live="polite">Отсчёт n = 1: оба значения 0.500</output>
+</section>
+<style>
+.alias-demo{border:1px solid #dbe4e8;background:#fff;border-radius:8px;padding:20px;margin:28px 0}.legend{display:flex;flex-wrap:wrap;gap:10px 24px;font-size:14px;margin-bottom:14px}.legend strong:first-child{color:#00786d}.legend strong:last-child{color:#b85b0b}.alias-demo label{display:block;font-size:15px;margin:8px 0}.alias-demo input[type=range]{width:100%;min-height:32px;accent-color:#00786d}.circles{display:grid;grid-template-columns:1fr 1fr;gap:8px}.circles svg{width:100%;height:auto;min-width:0}.circles text{font:14px system-ui;fill:#17333e}.alias-demo output{display:block;font-size:15px;margin-top:16px;font-variant-numeric:tabular-nums}@media(max-width:480px){.circles{grid-template-columns:1fr}.alias-demo{padding:14px}}
+</style>
+<script>
+for(const root of document.querySelectorAll<HTMLElement>('.alias-demo')){
+ const slider=root.querySelector<HTMLInputElement>('[data-time-slider]')!;
+ const snap=root.querySelector<HTMLInputElement>('[data-snap]')!;
+ const update=()=>{
+ const t=Number(slider.value), values=[1,5].map(f=>Math.cos(2*Math.PI*f*t/6));
+ root.querySelector('[data-time]')!.textContent=t.toFixed(2);
+ root.querySelectorAll<SVGElement>('[data-circle]').forEach((circle,i)=>{
+ const angle=2*Math.PI*[1,5][i]*t/6,x=135+85*Math.cos(angle),y=140-85*Math.sin(angle);
+ const set=(q:string,attrs:Record<string,number>)=>{for(const [k,v]of Object.entries(attrs))circle.querySelector(q)!.setAttribute(k,String(v));};
+ set('[data-radius]',{x2:x,y2:y});set('[data-projection]',{x1:x,y1:y,x2:x,y2:140});set('[data-point]',{cx:x,cy:y});set('[data-foot]',{x:x-5});
+ circle.querySelector('[data-angle]')!.textContent=`Пройдено ${(angle*180/Math.PI).toFixed(0)}°`;
+ circle.querySelector('[data-value]')!.textContent=`Значение: ${values[i].toFixed(3)}`;
+ });
+ const isSample=Math.abs(t-Math.round(t))<1e-9;
+ root.querySelector('output')!.textContent=isSample?`Отсчёт n = ${Math.round(t)}: оба значения ${values[0].toFixed(3)}`:`Между отсчётами: ${values[0].toFixed(3)} и ${values[1].toFixed(3)}. Эти значения ADC не записывает.`;
+ };
+ slider.addEventListener('input',update);
+ snap.addEventListener('change',()=>{slider.step=snap.checked?'1':'0.05';if(snap.checked)slider.value=String(Math.round(Number(slider.value)));update();});update();
+}
+</script>

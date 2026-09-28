@@ -1,93 +1,98 @@
 # DSP: от сигнала к собственному HF-трансиверу
 
-Учебный маршрут на русском языке. Конечная цель — самостоятельно спроектировать DSP-часть HF-трансивера, объяснить математику каждого блока, собрать полную модель TX/RX в Python и подготовить её перенос в real-time DSP/FPGA. Финальный инженерный ориентир — понимать решения и компромиссы конструкций QMX/uSDX.
+## Сайт курса — Astro + MDX
 
-**Сейчас это curriculum/roadmap, а не готовый учебник.** Созданы планы 18 частей и структура для будущих уроков. Исполняемых лабораторных, готового трансивера и HDL пока нет. Основа — согласованный план из беседы «Изучение цифровой обработки сигналов».
+```sh
+npm ci
+npm run dev
+```
+
+Открыть адрес, который выведет Astro (обычно `http://localhost:4321`). Проверка статической сборки: `npm run build`; просмотр сборки: `npm run preview`.
+
+Текущие материалы сайта находятся в `src/content/course/*.mdx`. Первый урок — `src/content/course/01-sine-sampling.mdx`. Здесь продолжаем писать новые уроки. Файлы в `curriculum/` сохранены как исходный Markdown-снимок до перехода; параллельно редактировать две версии не нужно.
+
+- Формулы: `$...$` и `$$` на отдельных строках; KaTeX подключён автоматически.
+- Интерактивные объяснения: Astro-компоненты в `src/components/`, импортируемые прямо в MDX.
+- Python-эксперименты: `labs/`, inline dependencies PEP 723, запуск через `uv run`.
+- Графики и код лаб копируются в `public/labs/` перед dev/build; эту копию вручную не редактируем.
+- Новые страницы используют frontmatter `title`, `description`, `part`, `order`, `kind`. `kind` — `lesson` либо `roadmap`; `order` задаёт порядок в навигации. URL формируется из имени файла: `/course/<имя>/`.
+- Шаблон будущего урока: `templates/lesson.mdx`.
+
+Сайт работает локально. Публикация не настроена.
+
+
+Конечная цель — спроектировать DSP-тракт HF-трансивера, объяснить его блоки, собрать модель передачи и приёма в Python и подготовить перенос в потоковую обработку и FPGA. Для сравнения архитектур разберём конкретные версии QMX/uSDX.
+
+Сейчас есть планы 18 частей и восемь уроков: от синусоиды до первого знакомства с DFT. Остальные темы пока остаются планами; готового трансивера и HDL-тракта ещё нет.
 
 ## Общая карта
 
 ```text
-signals → sampling → complex/IQ → Fourier/FFT → filters
-                                                   ↓
-                                                multirate
-                                                   ↓
-                         RX: NCO → mixer → DDC → demodulation
-                                                   ↕
-                         TX: modulation → interpolation → DUC
-                                                   ↓
-                         noise / nonlinearity / synchronization / feedback
-                                                   ↓
-                         complete Python transceiver (собираем постепенно)
-                                                   ↓
-                         fixed-point → streaming → FPGA bridge
-                                                   ↓
-                         QMX/uSDX analysis → собственная архитектура
+сигнал → отсчёты → квантование → I/Q → спектр → фильтры
+                                                 ↓
+                             смена частоты дискретизации
+                                                 ↓
+                   приём: перенос частоты → демодуляция
+                   передача: модуляция → перенос частоты
+                                                 ↓
+                       шум → синхронизация → обратная связь
+                                                 ↓
+                              полная Python-модель
+                                                 ↓
+                        fixed-point → поток → FPGA
+                                                 ↓
+                      разбор QMX/uSDX → своя архитектура
 ```
-
-Математика появляется по мере необходимости: тригонометрия и Euler → комплексные проекции и DFT → convolution → z-transform и feedback. Для старта достаточно базового Python; умение работать с массивами осваиваем в лабораториях.
 
 ## Части курса
 
 | № | Раздел |
 |---|---|
-| 01 | [Сигналы, sampling и quantization](curriculum/01-signals-sampling-quantization/README.md) |
-| 02 | [Комплексные числа и I/Q](curriculum/02-complex-iq/README.md) |
-| 03 | [Fourier, DFT и FFT](curriculum/03-fourier-dft-fft/README.md) |
-| 04 | [LTI, convolution, FIR и IIR](curriculum/04-lti-convolution-fir-iir/README.md) |
-| 05 | [Multirate DSP](curriculum/05-multirate/README.md) |
-| 06 | [Mixers, NCO и DDC](curriculum/06-mixers-nco-ddc/README.md) |
-| 07 | [Demodulation: CW, AM, FM и SSB](curriculum/07-demodulation/README.md) |
-| 08 | [Hilbert transform и analytic signals](curriculum/08-hilbert-analytic/README.md) |
-| 09 | [TX, DUC и reconstruction](curriculum/09-tx-duc/README.md) |
-| 10 | [Модуляция и polar representation](curriculum/10-modulation-polar/README.md) |
-| 11 | [Noise, dynamic range и nonlinearity](curriculum/11-noise-dynamic-range-nonlinearity/README.md) |
-| 12 | [Digital modes и synchronization](curriculum/12-digital-modes-synchronization/README.md) |
-| 13 | [Feedback DSP: AGC, PLL и ALC](curriculum/13-agc-pll-alc/README.md) |
-| 14 | [Fixed-point DSP](curriculum/14-fixed-point/README.md) |
-| 15 | [Streaming и real-time architecture](curriculum/15-streaming-real-time/README.md) |
-| 16 | [FPGA bridge](curriculum/16-fpga-bridge/README.md) |
-| 17 | [Полный Python HF transceiver](curriculum/17-python-hf-transceiver/README.md) |
-| 18 | [Архитектурный разбор QMX/uSDX](curriculum/18-qmx-usdx-analysis/README.md) |
+| 01 | [Сигналы, дискретизация и квантование](src/content/course/01-signals-sampling-quantization.mdx) |
+| 02 | [Комплексные числа и I/Q](src/content/course/02-complex-iq.mdx) |
+| 03 | [Fourier, DFT и FFT](src/content/course/03-fourier-dft-fft.mdx) |
+| 04 | [Линейные системы, свёртка, FIR и IIR](src/content/course/04-lti-convolution-fir-iir.mdx) |
+| 05 | [Смена частоты дискретизации: multirate DSP](src/content/course/05-multirate.mdx) |
+| 06 | [Смесители, NCO и DDC](src/content/course/06-mixers-nco-ddc.mdx) |
+| 07 | [Демодуляция CW, AM, FM и SSB](src/content/course/07-demodulation.mdx) |
+| 08 | [Преобразование Гильберта и аналитический сигнал](src/content/course/08-hilbert-analytic.mdx) |
+| 09 | [Передающий тракт: TX, DUC и DAC](src/content/course/09-tx-duc.mdx) |
+| 10 | [Модуляция и полярное представление](src/content/course/10-modulation-polar.mdx) |
+| 11 | [Шум, динамический диапазон и нелинейность](src/content/course/11-noise-dynamic-range-nonlinearity.mdx) |
+| 12 | [Цифровая модуляция и синхронизация](src/content/course/12-digital-modes-synchronization.mdx) |
+| 13 | [Обратная связь: AGC, PLL и ALC](src/content/course/13-agc-pll-alc.mdx) |
+| 14 | [Вычисления с фиксированной точкой](src/content/course/14-fixed-point.mdx) |
+| 15 | [Потоковая обработка и работа в реальном времени](src/content/course/15-streaming-real-time.mdx) |
+| 16 | [Переход от Python к FPGA](src/content/course/16-fpga-bridge.mdx) |
+| 17 | [Полная Python-модель HF-трансивера](src/content/course/17-python-hf-transceiver.mdx) |
+| 18 | [Архитектурный разбор QMX/uSDX](src/content/course/18-qmx-usdx-analysis.mdx) |
 
 ## Как проходить
 
-Основной порядок — 01–15. Часть 17 служит сквозным проектом: первый RX после 06–08, TX/RX loopback после 09, затем шум, управление, fixed-point и streaming. Номер 17 сохраняет место итогового проекта в согласованном плане; проходить FPGA перед Python-трансивером не нужно. После рабочей модели можно перейти к 16, затем к 18.
+Основной порядок — части 01–15. Часть 17 служит сквозным проектом: первый приёмник после 06–08, передача и приём после 09, затем шум, управление, ограниченная точность и потоковая обработка. FPGA перед Python-трансивером не требуется. После рабочей модели можно перейти к 16, затем к 18.
 
-У SSB два прохода: в 07 изучаем приём и обзор методов, в 08 разбираем Hilbert/analytic signal и возвращаемся к phasing/Weaver. В 12 сначала используем известную синхронизацию, затем совместно с PLL/Costas loop из 13 добавляем восстановление carrier. Это убирает циклические предпосылки.
+SSB изучаем в два этапа: в 07 — приём и обзор методов, в 08 — формирование через преобразование Гильберта и сравнение методов. В 12 начинаем с известной синхронизации, а после PLL и петли Costas из 13 добавляем её восстановление.
 
-Фиксированного расписания нет. Переходим дальше, когда можем объяснить блок своими словами, предсказать эксперимент и подтвердить результат измерением.
+Двигаемся дальше, когда можем объяснить блок своими словами и предсказать результат опыта. Критерии в планах отмечаем только после проверки понимания.
 
-## Принципы лаборатории
+## Принципы лабы
 
-- Максимум работы на компьютере: Python + NumPy + SciPy / scipy.signal + Matplotlib. Физическое оборудование не требуется для основной части курса.
-- Сначала интуиция, затем необходимая математика, эксперимент и вывод. FPGA/ADC/DAC/RF-практика — поздний этап.
-- Базовые сигналы — float64, комплексные — complex128. Ранний quantizer — отдельная модель ADC; весь тракт переводим в fixed-point только в 14.
-- Convolution, FIR delay line, phase accumulator и базовые rate converters сначала делаем самостоятельно, затем сверяем с библиотекой. FFT используем готовую после короткой ручной DFT.
-- Смотрим waveform и spectrum; по задаче добавляем PSD, phase, I/Q, constellation, eye diagram и impulse response. До 03 достаточно временных графиков.
-- Фиксируем Fs, units, amplitude/full scale, длительность, window/normalization, random seed и ожидаемый результат. Различаем dBFS, dBm и PSD.
-- Используем допустимые IF/baseband-модели. Указание HF carrier в настройках само по себе не позволяет дискретизировать её произвольно низким Fs.
-- Реальное audio I/O и sounddevice — опциональное позднее расширение; исходные данные сначала синтетические.
-
-## Контрольные точки
-
-- [ ] После 01–03: объясняю aliasing, I/Q и нормировку спектра.
-- [ ] После 04–06: проектирую filter и DDC 192 → 12 kS/s с обоснованным anti-alias filtering.
-- [ ] После 07–10: собираю SSB TX/RX loopback и измеряю unwanted sideband suppression.
-- [ ] После 11–13: объясняю ограничения шума/перегрузки, работу digital modem и feedback loops.
-- [ ] После 14–15: выбираю widths и проверяю сохранение состояния на границах блоков.
-- [ ] Проект 17: воспроизводимая модель трансивера с таблицей интерфейсов и измерениями.
-- [ ] После 16: выбранный HDL-блок соответствует Python golden reference.
-- [ ] После 18: обосновываю собственную архитектуру и сравниваю её с конкретными версиями QMX/uSDX.
+- Основная работа — Python, NumPy, SciPy и Matplotlib. Оборудование понадобится на поздних необязательных этапах.
+- Объяснение идёт от задачи и геометрии к формуле, затем к опыту и самопроверке.
+- Базовые модели используют float64 и complex128. Квантование моделируем отдельно; весь тракт переводим в fixed-point в части 14.
+- Свёртку, FIR, накопитель фазы и смену частоты дискретизации сначала реализуем самостоятельно, затем сравниваем с библиотекой.
+- Сохраняем параметры, частоту дискретизации, единицы, шкалу амплитуды, длительность и seed случайных данных. У спектров указываем окно и нормировку.
+- Для каждого опыта выбираем допустимую полосу: указание радиочастоты в настройках не позволяет записывать её при произвольно низкой частоте дискретизации.
 
 ## Структура материалов
 
 ```text
-README.md                       общая карта и критерии
-curriculum/01-.../README.md      roadmap отдельной части
-curriculum/01-.../01-topic.md    будущий урок (ещё не создан)
-templates/lesson.md             шаблон урока
-labs/README.md                  соглашения для будущего кода и результатов
-notes/README.md                 журнал обучения и открытых вопросов
+src/content/course/    актуальные уроки и планы в MDX
+src/components/        интерактивные схемы
+labs/                  скрипты и результаты опытов
+templates/lesson.mdx   шаблон нового урока
+notes/                 журнал обучения
+curriculum/            исходный снимок материалов до перехода на Astro
 ```
 
-Следующий шаг — добавить первый урок «Синусоида → sampling → phase → aliasing» в часть 01 по [шаблону урока](templates/lesson.md), с первым Python-экспериментом и графиками Matplotlib.
+Начать: [Синусоида и отсчёты](src/content/course/01-sine-sampling.mdx). [Запуск первой лабы](labs/01/README.md). [Все лабы](labs/README.md).

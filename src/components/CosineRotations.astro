@@ -1,0 +1,78 @@
+<section class="cos-rot" aria-label="Косинус как сумма двух комплексных вращений">
+  <label for="cos-angle">Угол: <strong data-angle-value>60°</strong></label>
+  <input id="cos-angle" data-angle type="range" min="0" max="360" step="1" value="60" />
+
+  <svg viewBox="0 0 520 390" role="img" aria-label="Сложение сопряжённых векторов: начало второго перенесено в конец первого">
+    <path d="M55 195H465 M260 25V365" class="axis" />
+    <circle cx="260" cy="195" r="90" class="unit" />
+    <text x="470" y="190">I</text><text x="267" y="27">Q</text>
+
+    <line data-plus x1="260" y1="195" x2="305" y2="117.1" class="vector plus" />
+    <circle data-plus-point cx="305" cy="117.1" r="6" class="point plus" />
+    <text data-plus-label x="313" y="113">z₊</text>
+
+    <line data-minus x1="260" y1="195" x2="305" y2="272.9" class="vector minus" />
+    <circle data-minus-point cx="305" cy="272.9" r="6" class="point minus" />
+    <text data-minus-label x="313" y="289">z₋</text>
+
+    <line data-translated-minus x1="305" y1="117.1" x2="350" y2="195" class="translated-minus" />
+    <text data-translated-label x="331" y="151">перенесённый z₋</text>
+
+    <line data-sum x1="260" y1="195" x2="350" y2="195" class="sum" />
+    <circle data-sum-point cx="350" cy="195" r="7" class="sum-point" />
+    <text data-sum-label x="295" y="224">сумма = 1.000</text>
+
+    <line data-average x1="260" y1="195" x2="305" y2="195" class="average" />
+    <circle data-average-point cx="305" cy="195" r="6" class="average-point" />
+    <text data-average-label x="274" y="181">÷2 = 0.500</text>
+  </svg>
+
+  <div class="values">
+    <output data-plus-output>z₊ = 0.500 + j0.866</output>
+    <output data-minus-output>z₋ = 0.500 − j0.866</output>
+    <output data-sum-output>z₊ + z₋ = 1.000 + j0</output>
+    <output data-average-output>(z₊ + z₋) / 2 = 0.500 + j0</output>
+  </div>
+</section>
+
+<style>
+  .cos-rot{border:1px solid #dbe4e8;background:#fff;border-radius:8px;padding:20px;margin:28px 0}.cos-rot>label{display:block;margin-bottom:8px}.cos-rot>input{width:100%;min-height:30px;accent-color:#00786d}.cos-rot svg{display:block;width:min(100%,600px);height:auto;margin:8px auto}.cos-rot svg text{font:14px system-ui;fill:#17333e}.axis{stroke:#bdcdd3}.unit{fill:none;stroke:#d3dee2}.vector{stroke-width:4}.point{stroke:none}.plus{stroke:#00786d;fill:#00786d}.minus{stroke:#b85b0b;fill:#b85b0b}.translated-minus{stroke:#b85b0b;stroke-width:4;stroke-dasharray:7 5}.sum{stroke:#c7b7dc;stroke-width:10}.sum-point{fill:#8b6bb1}.average{stroke:#5f3d8c;stroke-width:5}.average-point{fill:#5f3d8c}.values{display:grid;gap:5px;text-align:center;font-variant-numeric:tabular-nums}.values output:nth-last-child(-n+2){font-weight:700}@media(max-width:540px){.cos-rot{padding:13px}.cos-rot svg text{font-size:12px}}
+</style>
+
+<script>
+for (const root of document.querySelectorAll<HTMLElement>('.cos-rot')) {
+  const angleInput = root.querySelector<HTMLInputElement>('[data-angle]')!;
+  const set = (selector:string,attrs:Record<string,number>) => {
+    const element=root.querySelector(selector)!;
+    for (const [name,value] of Object.entries(attrs)) element.setAttribute(name,String(value));
+  };
+  const clean=(value:number)=>Math.abs(value)<5e-12?0:value;
+  const complex=(i:number,q:number)=>`${i.toFixed(3)} ${q<0?'−':'+'} j${Math.abs(q).toFixed(3)}`;
+  const update=()=>{
+    const degrees=Number(angleInput.value), radians=degrees*Math.PI/180;
+    const i=clean(Math.cos(radians)),q=clean(Math.sin(radians));
+    const x=260+90*i, yPlus=195-90*q, yMinus=195+90*q, xSum=260+180*i;
+    set('[data-plus]',{x2:x,y2:yPlus});set('[data-plus-point]',{cx:x,cy:yPlus});
+    set('[data-minus]',{x2:x,y2:yMinus});set('[data-minus-point]',{cx:x,cy:yMinus});
+    set('[data-translated-minus]',{x1:x,y1:yPlus,x2:xSum,y2:195});
+    set('[data-sum]',{x2:xSum});set('[data-sum-point]',{cx:xSum});
+    set('[data-average]',{x2:x});set('[data-average-point]',{cx:x});
+    const plusLabel=root.querySelector<SVGTextElement>('[data-plus-label]')!;
+    plusLabel.setAttribute('x',String(x+8));plusLabel.setAttribute('y',String(yPlus-4));
+    const minusLabel=root.querySelector<SVGTextElement>('[data-minus-label]')!;
+    minusLabel.setAttribute('x',String(x+8));minusLabel.setAttribute('y',String(yMinus+16));
+    const translatedLabel=root.querySelector<SVGTextElement>('[data-translated-label]')!;
+    translatedLabel.setAttribute('x',String((x+xSum)/2-30));translatedLabel.setAttribute('y',String((yPlus+195)/2-8));
+    const sumLabel=root.querySelector<SVGTextElement>('[data-sum-label]')!;
+    sumLabel.setAttribute('x',String((260+xSum)/2-40));sumLabel.textContent=`сумма = ${(2*i).toFixed(3)}`;
+    const averageLabel=root.querySelector<SVGTextElement>('[data-average-label]')!;
+    averageLabel.setAttribute('x',String((260+x)/2-28));averageLabel.textContent=`÷2 = ${i.toFixed(3)}`;
+    root.querySelector('[data-angle-value]')!.textContent=`${degrees}°`;
+    root.querySelector('[data-plus-output]')!.textContent=`z₊ = ${complex(i,q)}`;
+    root.querySelector('[data-minus-output]')!.textContent=`z₋ = ${complex(i,-q)}`;
+    root.querySelector('[data-sum-output]')!.textContent=`z₊ + z₋ = ${(2*i).toFixed(3)} + j0`;
+    root.querySelector('[data-average-output]')!.textContent=`(z₊ + z₋) / 2 = ${i.toFixed(3)} + j0`;
+  };
+  angleInput.addEventListener('input',update);update();
+}
+</script>

@@ -17,7 +17,7 @@
 3. FM: phase difference, instantaneous frequency, deviation и масштабирование.
 4. SSB: USB/LSB, product detection; обзор filtering, phasing и Weaver.
 
-## Python-лаборатория
+## Python-лаба
 
 - Сгенерировать короткую CW-посылку и сравнить прямоугольную и сглаженную огибающие.
 - Собрать AM TX/RX и сравнить envelope/synchronous detector при изменении параметров.

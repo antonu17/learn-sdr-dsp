@@ -18,7 +18,7 @@
 4. Frequency response; windowed sinc и Parks–McClellan.
 5. IIR: feedback, z-transform по необходимости, poles/zeros, stability, biquads/SOS, Butterworth и Chebyshev.
 
-## Python-лаборатория
+## Python-лаба
 
 - Написать convolution и FIR с delay line; сравнить с np.convolve и scipy.signal.lfilter.
 - Спроектировать CW-фильтр 300–500 Hz и SSB-фильтр примерно 2.4 kHz с явно указанными границами полос.

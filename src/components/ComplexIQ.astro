@@ -1,0 +1,58 @@
+<section class="iq-demo" aria-label="Комплексный вектор I и Q">
+  <div class="iq-controls">
+    <label for="iq-angle">Угол: <strong data-angle-value>60°</strong></label>
+    <input id="iq-angle" data-angle type="range" min="0" max="360" step="1" value="60" />
+    <label for="iq-amplitude">Амплитуда: <strong data-amplitude-value>1.00</strong></label>
+    <input id="iq-amplitude" data-amplitude type="range" min="0" max="1" step="0.05" value="1" />
+  </div>
+  <svg viewBox="0 0 440 360" role="img" aria-label="Комплексная плоскость с проекциями I и Q">
+    <path d="M40 180H400 M220 20V340" stroke="#bdcdd3" />
+    <circle cx="220" cy="180" r="130" fill="none" stroke="#d3dee2" />
+    <text x="405" y="175">I</text><text x="227" y="25">Q</text>
+    <text x="348" y="202">+1</text><text x="76" y="202">−1</text>
+    <text x="227" y="55">+1</text><text x="227" y="320">−1</text>
+    <text class="quadrant" x="330" y="82">1-я четверть</text>
+    <text class="quadrant" x="96" y="82">2-я четверть</text>
+    <text class="quadrant" x="96" y="290">3-я четверть</text>
+    <text class="quadrant" x="330" y="290">4-я четверть</text>
+    <line data-vector x1="220" y1="180" x2="285" y2="67.4" stroke="#00786d" stroke-width="4" />
+    <line data-i x1="220" y1="180" x2="285" y2="180" stroke="#b85b0b" stroke-width="3" />
+    <line data-q x1="285" y1="180" x2="285" y2="67.4" stroke="#6a4c9c" stroke-width="3" stroke-dasharray="6 5" />
+    <circle data-point cx="285" cy="67.4" r="7" fill="#00786d" />
+    <text data-i-label x="252" y="202">I = 0.500</text>
+    <text data-q-label x="294" y="126">Q = 0.866</text>
+  </svg>
+  <output aria-live="polite">z = 0.500 + j0.866 · |z| = 1.000 · фаза: 60°</output>
+</section>
+
+<style>
+  .iq-demo{border:1px solid #dbe4e8;background:#fff;border-radius:8px;padding:20px;margin:28px 0}.iq-controls{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;align-items:center}.iq-controls label{font-size:15px}.iq-controls input{width:100%;min-height:30px;accent-color:#00786d}.iq-demo svg{display:block;width:min(100%,520px);height:auto;margin:12px auto}.iq-demo svg text{font:14px system-ui;fill:#17333e}.iq-demo svg .quadrant{font-size:12px;fill:#6c7c82}.iq-demo output{display:block;text-align:center;font-size:15px;font-variant-numeric:tabular-nums}@media(max-width:480px){.iq-demo{padding:13px}.iq-controls{grid-template-columns:1fr}.iq-controls input{margin-bottom:6px}}
+</style>
+
+<script>
+for (const root of document.querySelectorAll<HTMLElement>('.iq-demo')) {
+  const angleInput = root.querySelector<HTMLInputElement>('[data-angle]')!;
+  const amplitudeInput = root.querySelector<HTMLInputElement>('[data-amplitude]')!;
+  const set = (selector:string, attrs:Record<string,number>) => {
+    const element = root.querySelector(selector)!;
+    for (const [name, value] of Object.entries(attrs)) element.setAttribute(name, String(value));
+  };
+  const formatSigned = (value:number) => `${value < 0 ? '−' : '+'} j${Math.abs(value).toFixed(3)}`;
+  const update = () => {
+    const degrees = Number(angleInput.value), amplitude = Number(amplitudeInput.value);
+    const radians = degrees * Math.PI / 180;
+    const i = amplitude * Math.cos(radians), q = amplitude * Math.sin(radians);
+    const scale = 130, x = 220 + scale*i, y = 180 - scale*q;
+    set('[data-vector]', {x2:x,y2:y}); set('[data-i]', {x2:x,y2:180});
+    set('[data-q]', {x1:x,y1:180,x2:x,y2:y}); set('[data-point]', {cx:x,cy:y});
+    const iLabel = root.querySelector<SVGTextElement>('[data-i-label]')!;
+    iLabel.setAttribute('x', String((220+x)/2)); iLabel.textContent = `I = ${i.toFixed(3)}`;
+    const qLabel = root.querySelector<SVGTextElement>('[data-q-label]')!;
+    qLabel.setAttribute('x', String(x+8)); qLabel.setAttribute('y', String((180+y)/2)); qLabel.textContent = `Q = ${q.toFixed(3)}`;
+    root.querySelector('[data-angle-value]')!.textContent = `${degrees}°`;
+    root.querySelector('[data-amplitude-value]')!.textContent = amplitude.toFixed(2);
+    root.querySelector('output')!.textContent = `z = ${i.toFixed(3)} ${formatSigned(q)} · |z| = ${amplitude.toFixed(3)} · фаза: ${amplitude === 0 ? 'не определена' : `${degrees}°`}`;
+  };
+  angleInput.addEventListener('input', update); amplitudeInput.addEventListener('input', update); update();
+}
+</script>

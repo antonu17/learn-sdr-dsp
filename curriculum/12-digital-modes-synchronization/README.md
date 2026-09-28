@@ -17,7 +17,7 @@
 3. Symbol timing recovery, частотная/фазовая ошибка, carrier recovery и Costas loop.
 4. FSK/MSK; архитектурная связь с FT8/WSPR без обязательной реализации полного протокола.
 
-## Python-лаборатория
+## Python-лаба
 
 - Сначала собрать BPSK/QPSK loopback с известной синхронизацией; рисовать constellation и eye diagram.
 - Добавить timing offset, carrier offset и AWGN по отдельности; измерить BER.

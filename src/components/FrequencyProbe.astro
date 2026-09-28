@@ -1,0 +1,92 @@
+<section class="probe-demo" aria-label="Умножение на опорный сигнал и сложение результатов">
+  <p>Входной сигнал: <strong>+2 kHz</strong>, Fs = 8 kS/s. Амплитуда 1, начальная фаза 0°.</p>
+  <div class="controls">
+    <label for="probe-sample">Номер отсчёта n: <strong data-n>1</strong></label>
+    <input id="probe-sample" data-sample type="range" min="0" max="7" step="1" value="1" />
+    <label for="probe-frequency">Проверяемая частота: <strong data-frequency>+2 kHz</strong></label>
+    <input id="probe-frequency" data-probe type="range" min="-3000" max="3000" step="1000" value="2000" />
+  </div>
+
+  <svg viewBox="0 0 780 650" role="img" aria-label="Входной отсчёт, опорный отсчёт, произведение и сумма восьми произведений">
+    <text x="130" y="28" text-anchor="middle" class="panel-title">1. Вход z[n]</text>
+    <path d="M50 140H210 M130 60V220" class="axis" /><circle cx="130" cy="140" r="65" class="unit" />
+    <line data-input-vector x1="130" y1="140" x2="130" y2="75" class="input-vector" /><circle data-input-point cx="130" cy="75" r="5" class="input-point" />
+    <text data-input-angle x="130" y="244" text-anchor="middle">Угол = +90°</text>
+
+    <text x="390" y="28" text-anchor="middle" class="panel-title">2. Опорный сигнал p[n]</text>
+    <path d="M310 140H470 M390 60V220" class="axis" /><circle cx="390" cy="140" r="65" class="unit" />
+    <line data-probe-vector x1="390" y1="140" x2="390" y2="205" class="probe-vector" /><circle data-probe-point cx="390" cy="205" r="5" class="probe-point" />
+    <text data-probe-angle x="390" y="244" text-anchor="middle">Угол = −90°</text>
+
+    <text x="650" y="28" text-anchor="middle" class="panel-title">3. После умножения y[n]</text>
+    <path d="M570 140H730 M650 60V220" class="axis" /><circle cx="650" cy="140" r="65" class="unit" />
+    <line data-output-vector x1="650" y1="140" x2="715" y2="140" class="output-vector" /><circle data-output-point cx="715" cy="140" r="5" class="output-point" />
+    <text data-output-angle x="650" y="244" text-anchor="middle">Угол = 0°</text>
+
+    <text data-angle-equation x="390" y="285" text-anchor="middle" class="equation">+90° + (−90°) = 0°</text>
+
+    <text x="195" y="335" text-anchor="middle" class="panel-title">8 выходных отсчётов y[n]</text>
+    <path d="M65 475H325 M195 345V605" class="axis" /><circle cx="195" cy="475" r="100" class="unit" />
+    {[...Array(8)].map((_,n)=><line data-radial={n} x1="195" y1="475" x2="295" y2="475" class="output-vector radial" />)}
+    {[...Array(8)].map((_,n)=><circle data-radial-point={n} cx="295" cy="475" r="3.5" class="output-point" />)}
+
+    <text x="575" y="335" text-anchor="middle" class="panel-title">Сложение тех же 8 векторов</text>
+    <line x1="445" y1="475" x2="720" y2="475" class="baseline" />
+    <circle cx="470" cy="475" r="5" class="start-point" /><text x="470" y="500" text-anchor="middle">Начало</text>
+    {[...Array(8)].map((_,n)=><line data-chain={n} x1="470" y1="475" x2="496" y2="475" class="chain-vector" />)}
+    {[...Array(9)].map((_,n)=><circle data-chain-point={n} cx="470" cy="475" r="3.5" class="chain-point" />)}
+    <line data-result x1="470" y1="475" x2="678" y2="475" class="result" />
+    <circle data-result-point cx="678" cy="475" r="6" class="result-point" />
+  </svg>
+
+  <div class="readout" aria-live="polite">
+    <output>Разность частот входа и проверки: <strong data-residual>0 kHz</strong></output>
+    <output>Длина суммы: <strong data-sum-magnitude>8.000</strong> из 8</output>
+    <span data-hint>Все восемь результатов равны 1. Их сумма равна 8.</span>
+  </div>
+</section>
+
+<style>
+  .probe-demo{border:1px solid #dbe4e8;background:#fff;border-radius:8px;padding:20px;margin:28px 0}.probe-demo>p{margin-top:0}.controls{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;align-items:center}.controls input{width:100%;min-height:30px;accent-color:#00786d}.probe-demo svg{display:block;width:min(100%,860px);height:auto;margin:10px auto}.probe-demo svg text{font:13px system-ui;fill:#17333e}.probe-demo svg .panel-title{font-size:15px;font-weight:600}.probe-demo svg .equation{font-size:17px;font-weight:600}.axis,.baseline{stroke:#bdcdd3}.unit{fill:none;stroke:#d3dee2}.input-vector{stroke:#00786d;stroke-width:4}.input-point{fill:#00786d}.probe-vector{stroke:#b85b0b;stroke-width:4}.probe-point{fill:#b85b0b}.output-vector,.chain-vector{stroke:#6a4c9c;stroke-width:3.5}.output-point,.chain-point{fill:#6a4c9c}.radial{opacity:.55}.start-point{fill:#17333e}.result{stroke:#d23c77;stroke-width:5}.result-point{fill:#d23c77}.readout{display:grid;gap:4px;text-align:center;font-variant-numeric:tabular-nums}.readout span{color:#52656d}@media(max-width:620px){.probe-demo{padding:13px}.controls{grid-template-columns:1fr}}
+</style>
+
+<script>
+for (const root of document.querySelectorAll<HTMLElement>('.probe-demo')) {
+  const sampleInput=root.querySelector<HTMLInputElement>('[data-sample]')!;
+  const probeInput=root.querySelector<HTMLInputElement>('[data-probe]')!;
+  const formatK=(value:number)=>value===0?'0 kHz':`${value>0?'+':'−'}${Math.abs(value/1000).toFixed(0)} kHz`;
+  const formatAngle=(value:number)=>value===0?'0°':`${value>0?'+':'−'}${Math.abs(value).toFixed(0)}°`;
+  const vector=(selector:string,pointSelector:string,cx:number,cy:number,angleDegrees:number,radius:number)=>{
+    const angle=angleDegrees*Math.PI/180,x=cx+radius*Math.cos(angle),y=cy-radius*Math.sin(angle);
+    const line=root.querySelector<SVGLineElement>(selector)!;line.setAttribute('x2',String(x));line.setAttribute('y2',String(y));
+    const point=root.querySelector<SVGCircleElement>(pointSelector)!;point.setAttribute('cx',String(x));point.setAttribute('cy',String(y));
+  };
+  const update=()=>{
+    const fs=8000,signalFrequency=2000,nSamples=8,n=Number(sampleInput.value),probe=Number(probeInput.value);
+    const signalStep=360*signalFrequency/fs,probeStep=-360*probe/fs,residualStep=signalStep+probeStep;
+    const inputAngle=signalStep*n,probeAngle=probeStep*n,outputAngle=inputAngle+probeAngle;
+    vector('[data-input-vector]','[data-input-point]',130,140,inputAngle,65);
+    vector('[data-probe-vector]','[data-probe-point]',390,140,probeAngle,65);
+    vector('[data-output-vector]','[data-output-point]',650,140,outputAngle,65);
+    root.querySelector('[data-input-angle]')!.textContent=`Угол = ${formatAngle(inputAngle)}`;
+    root.querySelector('[data-probe-angle]')!.textContent=`Угол = ${formatAngle(probeAngle)}`;
+    root.querySelector('[data-output-angle]')!.textContent=`Угол = ${formatAngle(outputAngle)}`;
+    root.querySelector('[data-angle-equation]')!.textContent=`${formatAngle(inputAngle)} + (${formatAngle(probeAngle)}) = ${formatAngle(outputAngle)}`;
+
+    const vectors:{i:number,q:number}[]=[];let sumI=0,sumQ=0;
+    for(let index=0;index<nSamples;index++){
+      const angle=residualStep*index*Math.PI/180,i=Math.cos(angle),q=Math.sin(angle);vectors.push({i,q});sumI+=i;sumQ+=q;
+      const radial=root.querySelector<SVGLineElement>(`[data-radial="${index}"]`)!;radial.setAttribute('x2',String(195+100*i));radial.setAttribute('y2',String(475-100*q));
+      const radialPoint=root.querySelector<SVGCircleElement>(`[data-radial-point="${index}"]`)!;radialPoint.setAttribute('cx',String(195+100*i));radialPoint.setAttribute('cy',String(475-100*q));
+    }
+
+    let x=470,y=475;const first=root.querySelector<SVGCircleElement>('[data-chain-point="0"]')!;first.setAttribute('cx',String(x));first.setAttribute('cy',String(y));
+    vectors.forEach(({i,q},index)=>{const nextX=x+26*i,nextY=y-26*q;const segment=root.querySelector<SVGLineElement>(`[data-chain="${index}"]`)!;segment.setAttribute('x1',String(x));segment.setAttribute('y1',String(y));segment.setAttribute('x2',String(nextX));segment.setAttribute('y2',String(nextY));const point=root.querySelector<SVGCircleElement>(`[data-chain-point="${index+1}"]`)!;point.setAttribute('cx',String(nextX));point.setAttribute('cy',String(nextY));x=nextX;y=nextY;});
+    const result=root.querySelector<SVGLineElement>('[data-result]')!;result.setAttribute('x2',String(x));result.setAttribute('y2',String(y));const resultPoint=root.querySelector<SVGCircleElement>('[data-result-point]')!;resultPoint.setAttribute('cx',String(x));resultPoint.setAttribute('cy',String(y));
+    const magnitude=Math.hypot(sumI,sumQ),residual=signalFrequency-probe;
+    root.querySelector('[data-n]')!.textContent=String(n);root.querySelector('[data-frequency]')!.textContent=formatK(probe);root.querySelector('[data-residual]')!.textContent=formatK(residual);root.querySelector('[data-sum-magnitude]')!.textContent=magnitude.toFixed(3);
+    root.querySelector('[data-hint]')!.textContent=magnitude>7.999?'Все восемь результатов равны 1. Их сумма равна 8.':'Для выбранной частоты восемь выходных векторов взаимно компенсируются. Их сумма равна 0.';
+  };
+  sampleInput.addEventListener('input',update);probeInput.addEventListener('input',update);update();
+}
+</script>

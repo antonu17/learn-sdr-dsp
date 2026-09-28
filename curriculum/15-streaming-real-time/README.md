@@ -17,7 +17,7 @@
 3. Границы блоков, reset, discontinuities, underrun/overrun и backpressure.
 4. Multiplies/adds per sample, память и bandwidth; soft real-time в Python.
 
-## Python-лаборатория
+## Python-лаба
 
 - Разбить один вход на блоки разного размера; сравнить выход с непрерывной обработкой с учётом задержки и хвостов.
 - Проверить сохранение NCO phase и filter/resampler state на границах.

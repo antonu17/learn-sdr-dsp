@@ -18,7 +18,7 @@
 4. Test vectors, HDL simulation, выравнивание latency и bit-exact comparison.
 5. Опциональный этап на Arty A7; ADC/DAC и RF frontend только после проверки моделей.
 
-## Python-лаборатория
+## Python-лаба
 
 - Экспортировать входы и ожидаемые outputs из integer Python-модели.
 - Сравнить HDL simulation с reference на импульсе, тоне, случайных данных и предельных уровнях.

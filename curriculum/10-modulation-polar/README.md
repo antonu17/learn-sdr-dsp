@@ -17,7 +17,7 @@
 3. Polar representation z = A·exp(jφ), unwrap и поведение около нулевой амплитуды.
 4. Polar TX: разделение envelope/phase paths, bandwidth и согласование задержек.
 
-## Python-лаборатория
+## Python-лаба
 
 - Для AM, FM и SSB рисовать I/Q, envelope, unwrapped phase и instantaneous frequency.
 - Разложить SSB на A и φ, восстановить сигнал и оценить ошибку.

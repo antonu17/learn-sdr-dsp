@@ -18,7 +18,7 @@
 4. Channel: AWGN, interferers, offsets и nonlinearity; границы моделей ADC/DAC.
 5. Интеграция float, fixed-point и streaming; измерения между любыми блоками.
 
-## Python-лаборатория
+## Python-лаба
 
 - Этап A: CW/AM RX; этап B: SSB TX→channel→RX; FM как дополнительный режим.
 - Этап C: шум/помехи, AGC и метрики; этап D: integer и streaming варианты.

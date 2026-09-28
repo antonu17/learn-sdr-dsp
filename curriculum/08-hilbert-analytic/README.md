@@ -17,7 +17,7 @@
 3. USB/LSB через analytic signal; согласование задержек I/Q.
 4. Сравнение filtering, phasing и Weaver с возвратом к 07.
 
-## Python-лаборатория
+## Python-лаба
 
 - Построить analytic signal через scipy.signal.hilbert и проверить подавление отрицательных частот.
 - Получить USB/LSB на тестовой IF; измерить unwanted sideband suppression.

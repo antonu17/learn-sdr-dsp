@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+import '../styles/global.css';
+import 'katex/dist/katex.min.css';
+const {title,description,headings=[],kind='course'}=Astro.props;
+const entries=(await getCollection('course')).sort((a,b)=>a.data.order-b.data.order);
+const current=Astro.url.pathname;
+---
+<!doctype html>
+<html lang="ru">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width"/><meta name="description" content={description}/><title>{title} · Learn DSP</title><link rel="icon" href="/favicon.svg"/></head>
+<body>
+<a class="skip" href="#main">К содержанию</a>
+<header class="topbar"><a class="brand" href="/"><span class="brand-symbol">∿</span> LEARN DSP</a><span class="header-note">От сигнала к HF-трансиверу</span></header>
+<div class="shell">
+<aside class="sidebar"><details open><summary>Содержание курса</summary><nav aria-label="Курс"><a class:list={['overview',{active:current==='/'}]} href="/">Карта курса</a>{entries.map(entry=><a href={`/course/${entry.id}/`} aria-current={current===`/course/${entry.id}/`?'page':undefined} class:list={['nav-item',{active:current===`/course/${entry.id}/`,lesson:entry.data.kind==='lesson'}]}><span class="nav-number">{entry.data.kind==='lesson'?'↳':String(entry.data.part).padStart(2,'0')}</span><span>{entry.data.title}</span></a>)}</nav></details><div class="sidebar-foot">Python · NumPy · SciPy<br/>Matplotlib · FPGA позже</div></aside>
+<main id="main"><div class="eyebrow">{kind==='lesson'?'Лаба / урок':kind==='roadmap'?'Карта раздела':'Программа обучения'}</div><h1>{title}</h1>{description&&<p class="lead">{description}</p>}<article class="prose"><slot/></article></main>
+{headings.length>0&&<aside class="toc"><span class="toc-title">На этой странице</span><nav aria-label="На странице">{headings.filter(h=>h.depth===2).map(h=><a href={`#${h.slug}`}>{h.text}</a>)}</nav></aside>}
+</div>
+<script>
+const menu=document.querySelector<HTMLDetailsElement>('.sidebar details');
+if(menu && window.matchMedia('(max-width:720px)').matches) menu.open=false;
+</script>
+</body></html>

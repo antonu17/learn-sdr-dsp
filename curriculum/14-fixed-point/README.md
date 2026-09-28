@@ -18,7 +18,7 @@
 4. Overflow: wrap/saturation; truncation/rounding, coefficient quantization и limit cycles.
 5. Сравнение float64/complex128, float32/complex64 и 24/16/12/8-bit моделей.
 
-## Python-лаборатория
+## Python-лаба
 
 - Написать модели rounding, saturation и wrap с явной шириной; избегать неявного переполнения NumPy integers.
 - Перевести FIR, NCO и mixer в integer-модель; измерить SNR, spurs и запас аккумулятора.

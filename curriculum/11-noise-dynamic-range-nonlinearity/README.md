@@ -17,7 +17,7 @@
 3. Strong + weak signals, ADC clipping, quantization, SFDR и dynamic range.
 4. Нелинейная модель a1·x + a2·x² + a3·x³: harmonics, IMD3, compression и IP3.
 
-## Python-лаборатория
+## Python-лаба
 
 - Добавить шум с заданным SNR и seed; проверить интеграл PSD и выигрыш от сужения полосы.
 - Принять слабый сигнал рядом с сильным и разделить влияние фильтрации и clipping до фильтра.

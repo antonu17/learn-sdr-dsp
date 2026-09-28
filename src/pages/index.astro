@@ -1,0 +1,13 @@
+---
+import { getCollection } from 'astro:content';
+import Course from '../layouts/Course.astro';
+const parts=(await getCollection('course',entry=>entry.data.kind==='roadmap')).sort((a,b)=>a.data.order-b.data.order);
+---
+<Course title="Понять сигнал. Собрать трансивер." description="Изучаем DSP через эксперименты: от первых отсчётов до полной модели приёмника и передатчика в Python.">
+<a class="continue" href="/course/01-sine-sampling/"><span><small>Первый урок</small><strong>Синусоида и отсчёты</strong><span>Формула → отсчёты → эксперимент</span></span><span aria-hidden="true">↗</span></a>
+<h2>К чему идём</h2><p>Научиться проектировать DSP-тракт HF-трансивера, объяснять каждый блок и проверять решения измерениями. Сначала работаем в Python; к fixed-point, streaming и FPGA переходим с проверенной моделью.</p>
+<div class="signal-chain" aria-label="Путь обучения"><span>Сигнал</span><span>Спектр</span><span>Фильтры</span><span>I/Q · RX/TX</span><span>Трансивер</span></div>
+<h2>18 частей курса</h2><p>Идём дальше, когда можем предсказать результат эксперимента и объяснить его своими словами. Итоговый Python-трансивер собираем постепенно; FPGA для него не требуется.</p>
+<div class="course-list">{parts.map(part=><a href={`/course/${part.id}/`}><span class="part-number">{String(part.data.part).padStart(2,'0')}</span><span><strong>{part.data.title}</strong><span>{part.data.description}</span></span><span aria-hidden="true">↗</span></a>)}</div>
+<h2>Как устроено занятие</h2><p>Интуиция → необходимая математика → Python-эксперимент → вывод. Сохраняем параметры и графики, сравниваем прогноз с результатом. Первые модели используют float64 и complex128; ограничения разрядности вводим отдельно.</p>
+</Course>

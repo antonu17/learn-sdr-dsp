@@ -1,0 +1,19 @@
+<section class="circle-demo" aria-label="Окружность и отсчёты">
+<label for="sample-n">Номер отсчёта: <strong data-n>1</strong></label>
+<input id="sample-n" type="range" min="0" max="6" step="1" value="1"/>
+<svg viewBox="0 0 420 295" role="img" aria-label="Проекция вращающейся точки на горизонтальную ось"><circle cx="210" cy="135" r="95" fill="none" stroke="#c1d3da" stroke-width="2"/><path d="M85 135H335 M210 15V250" stroke="#c1d3da"/><text x="76" y="159">−1</text><text x="205" y="270">0</text><text x="325" y="159">+1</text><line data-radius x1="210" y1="135" x2="257.5" y2="52.73" stroke="#00786d" stroke-width="3"/><line data-projection x1="257.5" y1="52.73" x2="257.5" y2="135" stroke="#bb681c" stroke-width="2" stroke-dasharray="5 5"/><circle data-point cx="257.5" cy="52.73" r="7" fill="#00786d"/><rect data-foot x="251.5" y="129" width="12" height="12" fill="#bb681c"/><text data-value x="20" y="290">Отсчёт = 0.500</text></svg>
+<output aria-live="polite">Угол 60° · время 0.167 ms · отсчёт 0.500</output>
+</section>
+<script>
+for (const root of document.querySelectorAll<HTMLElement>('.circle-demo')) {
+ const input=root.querySelector<HTMLInputElement>('input')!;
+ const update=()=>{
+ const n=Number(input.value), angle=n*Math.PI/3, x=210+95*Math.cos(angle), y=135-95*Math.sin(angle);
+ const set=(selector:string,values:Record<string,string|number>)=>{const el=root.querySelector(selector)!;for(const [key,value]of Object.entries(values))el.setAttribute(key,String(value));};
+ set('[data-radius]',{x2:x,y2:y});set('[data-projection]',{x1:x,y1:y,x2:x,y2:135});set('[data-point]',{cx:x,cy:y});set('[data-foot]',{x:x-6,y:129});
+ root.querySelector('[data-n]')!.textContent=String(n);
+ root.querySelector('[data-value]')!.textContent=`Отсчёт = ${Math.cos(angle).toFixed(3)}`;
+ root.querySelector('output')!.textContent=`Угол ${n*60}° · время ${(n/6).toFixed(3)} ms · отсчёт ${Math.cos(angle).toFixed(3)}`;
+ };input.addEventListener('input',update);update();
+}
+</script>

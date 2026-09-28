@@ -17,7 +17,7 @@
 3. Frequency resolution, phase truncation и spurs.
 4. DDC: mixer → LPF → decimator → complex baseband.
 
-## Python-лаборатория
+## Python-лаба
 
 - При Fs = 96 kS/s перемножить real tones 12 и 10 kHz; увидеть 2 и 22 kHz, затем выделить 2 kHz.
 - Повторить перенос complex tone и объяснить отличие от real mixer.

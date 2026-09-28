@@ -17,7 +17,7 @@
 3. Переход к real IF/RF samples и допустимый частотный план.
 4. Модель DAC: zero-order hold, images и reconstruction LPF/BPF.
 
-## Python-лаборатория
+## Python-лаба
 
 - Собрать SSB TX с baseband при 12 kS/s и выходом 192 kS/s; выбрать IF так, чтобы полезный спектр помещался в Nyquist zone.
 - Проверить images до/после interpolation filter и полосу после upconversion.

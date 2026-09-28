@@ -17,7 +17,7 @@
 3. Costas loop и возврат к carrier recovery в 12.
 4. ALC: ограничение TX level, overshoot и влияние на модуляцию.
 
-## Python-лаборатория
+## Python-лаба
 
 - Подать ступень уровня и импульсную помеху на AGC; рисовать input/output envelope и gain.
 - Задать frequency/phase step для PLL; сравнить скорость захвата и noise tracking.
